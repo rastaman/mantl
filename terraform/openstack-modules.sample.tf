@@ -1,10 +1,11 @@
 variable subnet_cidr { default = "10.0.0.0/24" }
 variable public_key { default = "/home/you/.ssh/id_rsa.pub" }
 
-variable name { default = "mantl" }     # resources will start with "mantl-"
-variable control_count { default = "3"} # mesos masters, zk leaders, consul servers
-variable worker_count { default = "5"}  # worker nodes
-variable edge_count { default = "2"}    # load balancer nodes
+variable name { default = "mantl" }        # resources will start with "mantl-"
+variable control_count { default = "3"}    # mesos masters, zk leaders, consul servers
+variable worker_count { default = "5"}     # worker nodes
+variable kubeworker_count { default = "2"} # kubeworker nodes
+variable edge_count { default = "2"}       # load balancer nodes
 
 # Run 'nova network-list' to get these names and values
 # Floating ips are optional
@@ -19,6 +20,7 @@ variable image_name  { default = "your-CentOS-7" }
 #  Below are typical settings for mantl
 variable control_flavor_name { default = "your-XLarge" }
 variable worker_flavor_name { default = "your-Large" }
+variable kubeworker_flavor_name { default = "your-Large" }
 variable edge_flavor_name { default = "your-Small" }
 
 module "ssh-key" {
@@ -46,6 +48,12 @@ module "floating-ips-control" {
 module "floating-ips-worker" {
   source = "./terraform/openstack/floating-ip"
   count = "${var.worker_count}"
+  floating_pool = "${var.floating_ip_pool}"
+}
+
+module "floating-ips-kubeworker" {
+  source = "./terraform/openstack/floating-ip"
+  count = "${var.kubeworker_count}"
   floating_pool = "${var.floating_ip_pool}"
 }
 
@@ -80,6 +88,20 @@ module "instances-worker" {
   floating_ips = "${module.floating-ips-worker.ip_list}"
   keypair_name = "${module.ssh-key.keypair_name}"
   flavor_name = "${var.worker_flavor_name}"
+  image_name = "${var.image_name}"
+}
+
+module "instances-kubeworker" {
+  source = "./terraform/openstack/instance"
+  name = "${var.name}"
+  count = "${var.kubeworker_count}"
+  volume_size = "100"
+  count_format = "%03d"
+  role = "kubeworker"
+  network_uuid = "${module.network.network_uuid}"
+  floating_ips = "${module.floating-ips-kubeworker.ip_list}"
+  keypair_name = "${module.ssh-key.keypair_name}"
+  flavor_name = "${var.kubeworker_flavor_name}"
   image_name = "${var.image_name}"
 }
 
