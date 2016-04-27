@@ -27,3 +27,17 @@ packer_cache/
 account.json
 # annoying osx files
 .DS_Store
+
+# logs
+*.log
+
+# retry files
+*.retry
+
+# virtualenv folders
+bin/
+include/
+lib/
+
+# security file
+security.yml
