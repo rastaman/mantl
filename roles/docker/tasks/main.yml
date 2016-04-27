@@ -28,6 +28,12 @@
   tags:
     - disk
     - docker
+    - docker-storage
+
+- name: debug docker-storage
+  debug: msg="{{docker_lvm_backed}}\n{{docker_storage_already_set_up}}"
+  tags:
+    - docker-storage
 
 - name: set docker_configure_lvm
   set_fact:
@@ -35,6 +41,7 @@
   tags:
     - disk
     - docker
+    - docker-storage
 
 - name: create backing storage volume for docker storage
   sudo: yes
@@ -46,6 +53,7 @@
   tags:
     - disk
     - docker
+    - docker-storage
 
 - name: create backing storage filesystem for docker storage
   sudo: yes
@@ -57,6 +65,7 @@
   tags:
     - disk
     - docker
+    - docker-storage
 
 - name: create mount point for docker storage
   sudo: yes
@@ -68,6 +77,7 @@
   tags:
     - disk
     - docker
+    - docker-storage
 
 - name: mount docker storage
   sudo: yes
@@ -82,6 +92,7 @@
   tags:
     - disk
     - docker
+    - docker-storage
 
 - name: setup docker storage
   sudo: yes
@@ -105,6 +116,7 @@
   when: docker_lvm_backed|bool and docker_storage_already_set_up.stdout == "NOT_SET"
   tags:
     - docker
+    - docker-storage
 
 - include: lvm.yml
   when: docker_lvm_backed|bool and provider!="bare-metal"
@@ -130,6 +142,10 @@
   tags:
     - docker
 
+- name: debug host
+  debug: var=private_ipv4
+  tags:
+    - docker
 
 - name: configure docker consul dns
   sudo: yes
@@ -160,6 +176,7 @@
     dest: /root/.docker/config.json
   tags:
     - docker
+    - docker-registry
   register: docker_registry_credentials
 
 - name: add docker registry credentials to /etc/
@@ -170,6 +187,7 @@
     chdir: /root
   tags:
     - docker
+    - docker-registry
     - skip_ansible_lint
 
 - name: enable docker
