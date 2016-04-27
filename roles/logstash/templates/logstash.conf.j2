@@ -32,6 +32,13 @@ input {
     port => 8125
     type => statsd
   }
+  udp {
+    port => 25826
+    type => collectd
+    codec => collectd {
+      typesdb => ["/collectd/types.db", "/collectd/plugins/dockerplugin.db"]
+    }
+  }
 {% if logstash_input_log4j %}
   log4j {
     mode => "server"
