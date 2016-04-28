@@ -3,7 +3,7 @@ graceTimeOut = 10
 logLevel = "ERROR"
 
 [web]
-address = ":8081"
+address = "{{ ansible_default_ipv4['interface'] }}:8081"
 CertFile = "/etc/traefik/certs/traefik-admin.cert.pem"
 KeyFile = "/etc/traefik/certs/traefik-admin.key.pem"
 
