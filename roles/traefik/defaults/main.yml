@@ -1,7 +1,19 @@
 ---
 traefik_package: traefik-0.0.0
+
 traefik_marathon_endpoint: http://marathon.service.{{ consul_dns_domain }}:18080
 traefik_marathon_domain: marathon.localhost
 
+traefik_admin_address: "{{ hostvars[inventory_hostname].private_ipv4 }}"
+
 # Do Marathon apps automatically get exposed (traefik default is false)
 traefik_marathon_expose_by_default: "true"
+
+# if traefik_custom is set to true the version of traefik specified
+# will be downloaded and copied to /usr/bin/traefik
+# and the MantlUI will probably be broken if treafik has not been repackaged 
+# like specified here : https://github.com/CiscoCloud/nginx-mantlui
+traefik_custom: false
+traefik_release_folder: https://github.com/containous/traefik/releases/download/
+traefik_version: v1.0.0-beta.601
+traefik_binary: traefik_linux-amd64

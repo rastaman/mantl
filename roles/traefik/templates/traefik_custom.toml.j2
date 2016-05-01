@@ -1,0 +1,33 @@
+# Global configuration
+
+logLevel = "INFO"
+traefikLogsFile = "/var/log/traefik/traefik.log"
+accessLogsFile = "/var/log/traefik/access.log"
+
+defaultEntryPoints = ["http", "https"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+  [entryPoints.https]
+  address = ":443"  
+
+[acme]
+email = "webmaster@effervens.com"
+storageFile = "/etc/traefik/acme.json"
+entryPoint = "https"
+onDemand = true
+
+[[acme.domains]]
+  main = "{{ traefik_marathon_domain }}"
+
+[web]
+address = "{{ traefik_admin_address }}:8081"
+CertFile = "/etc/traefik/certs/traefik-admin.cert.pem"
+KeyFile = "/etc/traefik/certs/traefik-admin.key.pem"
+
+[marathon]
+endpoint = "{{ traefik_marathon_endpoint }}"
+watch = true
+domain = "{{ traefik_marathon_domain }}"
+ExposedByDefault = true

@@ -1,0 +1,19 @@
+[Unit]
+Description=Træfɪk, a modern reverse proxy
+Documentation=https://github.com/EmileVauge/traefik
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=traefik
+Group=traefik
+ExecStartPre=/bin/touch /var/log/traefik/access.log
+ExecStartPre=/bin/touch /var/log/traefik/traefik.log
+ExecStart=/usr/bin/traefik --configFile=/etc/traefik/traefik.toml
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
+LimitNOFILE=65536
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

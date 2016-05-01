@@ -1,0 +1,69 @@
+- name: stop traefik
+  sudo: yes
+  service: name=traefik state=stopped
+  when: traefik_custom
+  tags:
+    - traefik
+    - traefik_custom
+
+- name: update traefik with new binary
+  sudo: yes
+  get_url: 
+    url: "{{ traefik_release_folder }}/{{ traefik_version }}/{{ traefik_binary }}"
+    dest: /usr/bin/traefik
+    force: true
+  when: traefik_custom
+  tags:
+    - traefik
+
+- name: make new binary executable
+  sudo: yes
+  file:
+    name: /usr/bin/traefik
+    owner: root
+    group: root
+    mode: 0775
+  when: traefik_custom
+  tags:
+    - traefik
+    - traefik_custom
+
+- name: give capability to bind on ports <1024 to the binary
+  sudo: yes
+  shell: setcap 'cap_net_bind_service=+ep' /usr/bin/traefik
+  when: traefik_custom
+  tags:
+    - traefik
+    - traefik_custom
+
+- name: remove typo in traefik systemd config
+  sudo: yes
+  copy: src=./traefik.service dest=/etc/systemd/system/traefik.service
+  when: traefik_custom
+  tags:
+    - traefik
+    - traefik_custom
+
+- name: configure traefik for custom
+  sudo: yes
+  template:
+    src: traefik_custom.toml.j2
+    dest: /etc/traefik/traefik.toml
+    owner: traefik
+    group: traefik
+    mode: 0644
+    backup: yes
+  notify:
+    - reload systemd
+  when: traefik_custom
+  tags:
+    - traefik
+    - traefik_custom
+
+- name: start traefik
+  sudo: yes
+  service: name=traefik state=started
+  when: traefik_custom
+  tags:
+    - traefik
+    - traefik_custom

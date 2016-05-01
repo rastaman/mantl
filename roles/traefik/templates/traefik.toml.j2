@@ -3,7 +3,7 @@ graceTimeOut = 10
 logLevel = "ERROR"
 
 [web]
-address = "{{ hostvars[inventory_hostname].private_ipv4 }}:8081"
+address = "{{ traefik_admin_address }}:8081"
 CertFile = "/etc/traefik/certs/traefik-admin.cert.pem"
 KeyFile = "/etc/traefik/certs/traefik-admin.key.pem"
 
