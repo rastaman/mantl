@@ -1,9 +1,29 @@
-port = ":80"
-graceTimeOut = 10
-logLevel = "ERROR"
+logLevel = "INFO"
+traefikLogsFile = "/var/log/traefik/traefik.log"
+accessLogsFile = "/var/log/traefik/access.log"
+
+defaultEntryPoints = ["http", "https"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = "{{ traefik_public_ip }}:80"
+  [entryPoints.https]
+  address = "{{ traefik_public_ip }}:443"  
+    [entryPoints.https.tls]
+    CertFile = "/etc/letsencrypt/live/{{ traefik_marathon_domain }}/fullchain.pem"
+    KeyFile = "/etc/letsencrypt/live/{{ traefik_marathon_domain }}/privkey.pem"
+
+[acme]
+email = "{{ traefik_acme_contact }}"
+storageFile = "/etc/traefik/acme.json"
+entryPoint = "https"
+onDemand = true
+
+[[acme.domains]]
+  main = "{{ traefik_marathon_domain }}"
 
 [web]
-address = ":8081"
+address = "{{ hostvars[inventory_hostname].private_ipv4 }}:8081"
 CertFile = "/etc/pki/mantl/cert"
 KeyFile = "/etc/pki/mantl/key"
 
@@ -11,5 +31,10 @@ KeyFile = "/etc/pki/mantl/key"
 endpoint = "{{ traefik_marathon_endpoint }}"
 domain = "{{ traefik_marathon_domain }}"
 watch = true
-networkInterface = "{{ ansible_default_ipv4['interface'] }}"
+#networkInterface = "{{ ansible_default_ipv4['interface'] }}"
 ExposedByDefault = {{ traefik_marathon_expose_by_default }}
+
+[marathon.basic]
+{% set marathon_user,marathon_password = marathon_http_credentials.split(':') %}
+httpBasicUser = "{{ marathon_user }}"
+httpBasicPassword = "{{ marathon_password }}"

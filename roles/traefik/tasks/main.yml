@@ -55,8 +55,8 @@
 
 - name: generate traefik consul service
   sudo: yes
-  copy:
-    src: 'traefik-consul.json'
+  template:
+    src: 'traefik-consul.json.j2'
     dest: '/etc/consul/traefik.json'
   notify:
     - reload consul

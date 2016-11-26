@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: "{{ dc | default('all') }}"
   serial: "{{ serial | default(1) }}"
   vars:
     consul_create_secure_acl: true

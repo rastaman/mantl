@@ -31,3 +31,25 @@ packer_cache/
 account.json
 # annoying osx files
 .DS_Store
+
+# Eclipse
+.Python
+.project
+.pydevproject
+
+# Personal docs
+NOTES.md
+UPGRADE.md
+
+# Virtual env
+bin/
+include/
+lib/
+pip-selfcheck.json
+
+# Misc
+logs/
+frvns-vars.yml
+frvns.yml
+frvns_upgrade.yml
+mantl.sh

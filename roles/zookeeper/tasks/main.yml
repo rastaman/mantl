@@ -64,7 +64,8 @@
   sudo: yes
   yum:
     name: http://repos.mesosphere.io/el/7/x86_64/RPMS/mesosphere-zookeeper-3.4.6-0.1.20141204175332.centos7.x86_64.rpm
-    state: present
+    state: installed
+  ignore_errors: yes
   tags:
     - zookeeper
 
